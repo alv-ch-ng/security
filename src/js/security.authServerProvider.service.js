@@ -6,27 +6,52 @@
 
     module.factory('AuthServerProvider', function($http, localStorageService, SecurityConfig, Base64) {
 
-        function login(credentials) {
-            var data = 'username=' + credentials.username + '&password='
-                + credentials.password + '&grant_type=password&scope=read%20write&' +
-                'client_secret=' + SecurityConfig.getClientSecret() + '&client_id=' + SecurityConfig.getClientId();
-            return $http.post(SecurityConfig.getTokenEndpoint(), data, {
-                headers: {
+        function createLoginData(credentials) {
+            if (SecurityConfig.getAuthType() === 'oauth2') {
+                return 'username=' + credentials.username + '&password=' +
+                    credentials.password + '&grant_type=password&scope=read%20write&' +
+                    'client_secret=' + SecurityConfig.getClientSecret() + '&client_id=' + SecurityConfig.getClientId();
+            } else {
+                return 'j_username=' + encodeURIComponent(credentials.username) + '&j_password=' + encodeURIComponent(credentials.password) + '&submit=Login';
+            }
+        }
+
+        function createLoginHeaders() {
+            if (SecurityConfig.getAuthType() === 'oauth2') {
+                return {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json",
-                    "Authorization": "Basic " + Base64.encode("casksAndBottlesapp" + ':' + "mySecretOAuthSecret")
-                }
-            }).success(function (response) {
-                var expiredAt = new Date();
-                expiredAt.setSeconds(expiredAt.getSeconds() + response.expires_in);
-                response.expires_at = expiredAt.getTime();
-                localStorageService.set('token', response);
+                    "Authorization": "Basic " + Base64.encode(SecurityConfig.getClientId() + ':' + SecurityConfig.getClientSecret())
+                };
+            } else {
+                return {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                };
+            }
+
+        }
+
+        function login(credentials) {
+            if (SecurityConfig.getAuthType() !== 'oauth2' && SecurityConfig.getAuthType() !== 'cookie') {
+                throw new Error('No or unknown authType found: "' + SecurityConfig.getAuthType() + '".');
+            }
+
+            var data = createLoginData(credentials);
+            var headers = createLoginHeaders();
+            return $http.post(SecurityConfig.getAuthPath(), data, {headers: headers, ignoreAuthModule: 'ignoreAuthModule'})
+                .success(function (response) {
+                    if (SecurityConfig.getAuthType() === 'oauth2') {
+                        var expiredAt = new Date();
+                        expiredAt.setSeconds(expiredAt.getSeconds() + response.expires_in);
+                        response.expires_at = expiredAt.getTime();
+                        localStorageService.set('token', response);
+                    }
             });
         }
 
         function logout() {
             // logout from the server
-            $http.post(SecurityConfig.getLogoutEndpoint()).then(function () {
+            $http.post(SecurityConfig.getLogoutPath()).then(function () {
                 localStorageService.clearAll();
             });
         }
@@ -36,7 +61,7 @@
         }
 
         function hasValidToken() {
-            var token = this.getToken();
+            var token = getToken();
             return token && token.expires_at && token.expires_at > new Date().getTime();
         }
 

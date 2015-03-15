@@ -1,5 +1,4 @@
-;
-(function () {
+;(function () {
     'use strict';
 
     var module = angular.module('alv-ch-ng.security');
@@ -8,12 +7,14 @@
 
         var _clientId = '';
         var _clientSecret = '';
-        var _tokenEndpoint = 'oauth/token';
-        var _logoutEndpoint = 'api/logout';
-        var _registerPath = "api/register";
-        var _accountPath = "api/account";
-        var _resendPasswordPath = "api/account/resendPassword";
-        var _newPasswordPath = "api/account/newPassword";
+        var _authPath = 'oauth/token';
+        var _logoutPath = 'api/logout';
+        var _registerPath = 'api/register';
+        var _accountPath = 'api/account';
+        var _resendPasswordPath = 'api/account/resendPassword';
+        var _newPasswordPath = 'api/account/newPassword';
+        var _userIdParam = 'key';
+        var _authType = 'oauth2';
 
 
         this.setClientId = function(clientId) {
@@ -24,42 +25,52 @@
             _clientSecret = clientSecret;
         };
 
-        this.setTokenEndpoint = function(tokenEndpoint) {
-            _tokenEndpoint = tokenEndpoint;
+        this.setAuthPath = function(authPath) {
+            _authPath = authPath;
         };
 
-        this.setLogoutEndpoint = function(logoutEndpoint) {
-            _logoutEndpoint = logoutEndpoint;
+        this.setLogoutPath = function(logoutPath) {
+            _logoutPath = logoutPath;
         };
 
         this.setRegisterPath = function(registerPath) {
             _registerPath = registerPath;
-        }
+        };
 
         this.setAccountPath = function(accountPath) {
             _accountPath = accountPath;
-        }
+        };
 
         this.setResendPasswordPath = function(resendPasswordPath) {
             _resendPasswordPath = resendPasswordPath;
-        }
+        };
 
         this.setNewPasswordPath = function(newPasswordPath) {
             _newPasswordPath = newPasswordPath;
-        }
+        };
+
+        this.setUserIdParam = function(userIdParam) {
+            _userIdParam = userIdParam;
+        };
+
+        this.setAuthType = function(authType) {
+            _authType = authType;
+        };
 
         this.$get = function() {
             return {
                 getClientId: function() { return _clientId; },
                 getClientSecret: function() { return _clientSecret; },
-                getTokenEndpoint: function() { return _tokenEndpoint; },
-                getLogoutEndpoint: function() { return _logoutEndpoint; },
+                getAuthPath: function() { return _authPath; },
+                getLogoutPath: function() { return _logoutPath; },
                 getRegisterPath: function() { return _registerPath; },
                 getAccountPath: function() { return _accountPath; },
                 getResendPasswordPath: function() { return _resendPasswordPath; },
-                getNewPasswordPath: function() { return _newPasswordPath; }
-            }
-        }
+                getNewPasswordPath: function() { return _newPasswordPath; },
+                getUserIdParam: function() { return _userIdParam; },
+                getAuthType: function() { return _authType; }
+            };
+        };
 
     });
 

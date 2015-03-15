@@ -1,5 +1,4 @@
-;
-(function () {
+;(function () {
     'use strict';
 
     var module = angular.module('alv-ch-ng.security');
@@ -10,19 +9,16 @@
         var _onLoginFail = function() {};
 
         var _onLoginSuccess = function(identity) {
-            Principal.authenticate(identity)
-        }
+            Principal.authenticate(identity);
+        };
 
-         var _onLoginRequired = function() {
-            // user is not authenticated. stow the state they wanted before you
-            // send them to the signin state, so you can return them when you're done
+        var _onLoginRequired = function() {
             $rootScope.returnToState = $rootScope.toState;
             $rootScope.returnToStateParams = $rootScope.toStateParams;
-        }
+        };
 
         function login(credentials) {
-            AuthServerProvider.login(credentials).success(function (data) {
-                // retrieve the logged account information
+            AuthServerProvider.login(credentials).success(function () {
                 Principal.identity(true).then(function(account) {
                     if (angular.isFunction(_onLoginSuccess)) {
                         _onLoginSuccess(account);
@@ -42,17 +38,16 @@
 
         function authorize() {
             return Principal.identity(false, function() {
-                if ($rootScope.toState.data.roles
-                    && $rootScope.toState.data.roles.length > 0
-                    && !Principal.isInAnyRole($rootScope.toState.data.roles)) {
+                if ($rootScope.toState.data.roles &&
+                    $rootScope.toState.data.roles.length > 0 &&
+                    !Principal.isInAnyRole($rootScope.toState.data.roles)) {
                     _onAccessDenied();
                 }
             })
             .then(function() {
-                if ($rootScope.toState.data.roles
-                    && $rootScope.toState.data.roles.length > 0) {
+                if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0) {
                     if (!Principal.isIdentityResolved()) {
-                        _onLoginRequired()
+                        _onLoginRequired();
                     } else if (!Principal.isInAnyRole($rootScope.toState.data.roles) && angular.isFunction(_onAccessDenied)) {
                         _onAccessDenied();
                     }
@@ -65,7 +60,7 @@
         }
 
         function updateAccount(account) {
-            return $http.post(SecurityConfig.getAccountPath() + '/' + account.key, account);
+            return $http.post(SecurityConfig.getAccountPath() + '/' + account[SecurityConfig.getUserIdParam()], account);
         }
 
         function getAccount(key) {
