@@ -15,9 +15,7 @@
             alvchng: grunt.file.readJSON('.alvchngrc'),
              // Task configurations.
             clean: {
-                all: ['dist', 'build'],
-                dist: ['dist'],
-                build: ['build']
+                dist: ['dist']
             },
             ngtemplates:  {
               'templates':  {
@@ -25,6 +23,21 @@
                 src:      'templates/**.html',
                 dest:     'src/js/security.templates.js'
               }
+            },
+            'ngAnnotate': {
+                'dist': {
+                    'files': {
+                        'dist/alv-ch-ng.security.js': [
+                            "src/js/security.module.js",
+                            "src/js/security.authInterceptor.service.js",
+                            "src/js/security.authServerProvider.service.js",
+                            "src/js/security.base64.service.js",
+                            "src/js/security.principal.service.js",
+                            "src/js/security.securityConfig.service.js",
+                            "src/js/security.securityService.service.js"
+                        ]
+                    }
+                }
             },
             uglify: {
                 options: {
@@ -54,15 +67,19 @@
                       'lib/alv-ch-ng.core/dist/alv-ch-ng.core.templates.js'
                     ]
                   }
-                },
-                unit: {
-                    options: {
-                        'mangle': false
+                }
+            },
+            browserSync: {
+                dev: {
+                    bsFiles: {
+                        src : 'src/**/*'
                     },
-                    files: {
-                        'test/unit/alv-ch-ng.security.js': [
-
-                        ]
+                    options: {
+                        server: {
+                            baseDir: './src',
+                            directory: false
+                        },
+                        watchTask: true
                     }
                 }
             },
@@ -73,6 +90,8 @@
                         'src/js/security.securityConfig.service.js',
                         'src/js/security.securityService.service.js',
                         'src/js/security.authInterceptor.service.js',
+                        'src/js/security.securityCtrl.controller.js',
+                        'src/js/security.login.directive.js',
                         'src/js/security.principal.service.js',
                         'src/js/security.base64.service.js',
                         'src/js/security.authServerProvider.service.js'
@@ -122,24 +141,6 @@
                     src: 'test/coverage/reports/lcov/lcov.info'
                 }
             },
-            push: {
-                options: {
-                    files: ['package.json'],
-                    updateConfigs: [],
-                    releaseBranch: 'master',
-                    add: true,
-                    addFiles: ['*.*', 'dist/**', 'src/**', 'test/**'], // '.' for all files except ignored files in .gitignore
-                    commit: true,
-                    commitMessage: 'Release v%VERSION%',
-                    commitFiles: ['*.*', 'dist/**', 'src/**', 'test/**'], // '-a' for all files
-                    createTag: true,
-                    tagName: 'v%VERSION%',
-                    tagMessage: 'Version %VERSION%',
-                    push: false,
-                    npm: false,
-                    gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
-                }
-            },
             jshint: {
                 gruntfile: {
                     options: {
@@ -160,72 +161,30 @@
                     src: ['test/unit/**/*.js', '!test/**/helpers/*.helper.js']
                 }
             },
-            lesslint: {
-                options: {
-                    csslint: {
-                        csslintrc: '.csslintrc'
-                    },
-                    imports: ['src/less/**/*.less']
-                },
-                src: ['src/less/security.less']
-            },
-            watch: {
-              templates: {
-                files: 'src/template/**/*.html',
-                  tasks: ['templates']
-              },
-              less: {
-                files: 'src/less/**/*.less',
-                  tasks: ['less:prod']
-              },
-              jshint: {
-                files: 'src/js/*.js',
-                  tasks: ['jshint-test']
-              },
-              test: {
-                  files: 'src/js/**/*.js',
-                  tasks: ['unit-test']
-              }
-            },
             versioncheck: {
                 options: {
-                    skip : ["semver", "npm", "lodash"],
+                    skip : [
+                        "angular",
+                        "angular-local-storage",
+                        "angular-mocks",
+                        "angular-resource",
+                        "angular-route",
+                        "npm",
+                        "semver"
+                    ],
                     hideUpToDate : false
                 }
-            },
-            browserSync: {
-              dev: {
-                bsFiles: {
-                  src : 'src/**/*'
-                },
-                options: {
-                  server: {
-                    baseDir: './src',
-                    directory: false
-                  },
-                  watchTask: true
-                }
-              }
             }
         });
 
         // Tests
-        grunt.registerTask('unit-test', ['jasmine']);
-        grunt.registerTask('jshint-test', ['jshint']);
+        grunt.registerTask('test', [ 'jshint', 'jasmine']);
 
-        grunt.registerTask('all-test', [ 'htmlhint:templates', 'jshint-test', 'unit-test']);
         // CI
-        grunt.registerTask('travis', ['jshint', 'clean:build', 'unit-test', 'coveralls']);
-
-        // Templates
-        grunt.registerTask('templates', ['ngtemplates:templates']);
-
-        // DEV
-        grunt.registerTask('build', ['templates','all-test','copy:example','uglify:example']);
-        grunt.registerTask('dev', [/*'build',*/ 'browserSync:dev', 'watch']);
+        grunt.registerTask('travis', ['default', 'coveralls']);
 
         // Default task.
-        grunt.registerTask('default', ['clean:all','templates','all-test', 'concat','uglify:prod']);
+        grunt.registerTask('default', ['test', 'clean', 'ngtemplates', 'ngAnnotate', 'uglify:prod']);
     };
 
 
