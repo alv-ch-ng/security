@@ -7,7 +7,7 @@
     module.directive('login', function() {
 
         return {
-            restrict: 'AEC',
+            restrict: 'E',
             replace: true,
             controller: 'SecurityCtrl',
             link: function() {
