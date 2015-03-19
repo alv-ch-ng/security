@@ -31,10 +31,10 @@
                             "src/js/security.module.js",
                             "src/js/security.authInterceptor.service.js",
                             "src/js/security.authServerProvider.service.js",
-                            "src/js/security.base64.service.js",
                             "src/js/security.principal.service.js",
                             "src/js/security.securityConfig.service.js",
-                            "src/js/security.securityService.service.js"
+                            "src/js/security.securityService.service.js",
+                            "src/bower_components/angular-utf8-base64/angular-utf8-base64.js"
                         ]
                     }
                 }
@@ -93,7 +93,6 @@
                         'src/js/security.securityCtrl.controller.js',
                         'src/js/security.login.directive.js',
                         'src/js/security.principal.service.js',
-                        'src/js/security.base64.service.js',
                         'src/js/security.authServerProvider.service.js'
                     ],
                     options: {
@@ -106,6 +105,7 @@
                             'src/bower_components/angular-mocks/angular-mocks.js',
                             'src/bower_components/angular-resource/angular-resource.js',
                             'src/bower_components/angular-local-storage/dist/angular-local-storage.js',
+                            'src/bower_components/angular-utf8-base64/angular-utf8-base64.js',
                             'node_modules/grunt-contrib-jasmine/vendor/jasmine-2.0.0/jasmine.js'
                         ],
                         version: '2.0.0',
