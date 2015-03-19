@@ -4,7 +4,7 @@
 
     var module = angular.module('alv-ch-ng.security');
 
-    module.factory('AuthServerProvider', function($http, localStorageService, SecurityConfig, Base64) {
+    module.factory('AuthServerProvider', function($http, localStorageService, SecurityConfig, base64) {
 
         function createLoginData(credentials) {
             if (SecurityConfig.getAuthType() === 'oauth2') {
@@ -21,7 +21,7 @@
                 return {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json",
-                    "Authorization": "Basic " + Base64.encode(SecurityConfig.getClientId() + ':' + SecurityConfig.getClientSecret())
+                    "Authorization": "Basic " + base64.encode(SecurityConfig.getClientId() + ':' + SecurityConfig.getClientSecret())
                 };
             } else {
                 return {
