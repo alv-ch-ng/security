@@ -9,6 +9,7 @@
         var authPath = 'testAuthHost';
         var logoutPath = 'testLogoutEndpoint';
         var registerPath = 'testRegisterPath';
+        var activationPath = "testActivationPath";
         var accountPath = 'testAccountPath';
         var resendPasswordPath = 'testResendPasswordPath';
         var newPasswordPath = 'testNewPasswordPath';
@@ -26,6 +27,7 @@
                     provider.setAuthPath(authPath);
                     provider.setLogoutPath(logoutPath);
                     provider.setRegisterPath(registerPath);
+                    provider.setActivationPath(activationPath);
                     provider.setAccountPath(accountPath);
                     provider.setResendPasswordPath(resendPasswordPath);
                     provider.setNewPasswordPath(newPasswordPath);
@@ -63,6 +65,12 @@
         it('"offers a registerPath setter" ', function() {
             inject(function (SecurityConfig) {
                 expect(SecurityConfig.getRegisterPath()).toEqual(registerPath);
+            });
+        });
+
+        it('"offers an activationPath setter" ', function() {
+            inject(function (SecurityConfig) {
+                expect(SecurityConfig.getActivationPath()).toEqual(activationPath);
             });
         });
 

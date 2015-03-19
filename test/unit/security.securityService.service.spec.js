@@ -138,7 +138,7 @@
                         roles: ['grantingRole']
                     }
                 };
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, { data: localPrincipal});
+                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, localPrincipal);
                 SecurityService.authorize();
                 $httpBackend.flush();
                 expect(callback.required).not.toHaveBeenCalled();
@@ -207,6 +207,17 @@
             inject(function ($httpBackend, SecurityService, SecurityConfig) {
                 $httpBackend.expectPOST(SecurityConfig.getRegisterPath()).respond(200, { 'userName': 'testUserName' });
                 SecurityService.register({ 'userName': 'testUserName' }).success(function() {
+                    expect(true).toEqual(true);
+                });
+                $httpBackend.flush();
+            });
+        });
+
+        it('"activateAccount()" executes a request to "api/activate" ', function() {
+            inject(function ($httpBackend, SecurityService, SecurityConfig) {
+                var data = { 'key': 'testKey' };
+                $httpBackend.expectPOST(SecurityConfig.getActivationPath(), data).respond(200, { 'userName': 'testUserName' });
+                SecurityService.activateAccount(data).success(function() {
                     expect(true).toEqual(true);
                 });
                 $httpBackend.flush();

@@ -59,6 +59,10 @@
             return $http.post(SecurityConfig.getRegisterPath(), account);
         }
 
+        function activateAccount(data) {
+            return $http.post(SecurityConfig.getActivationPath(), data);
+        }
+
         function updateAccount(account) {
             return $http.post(SecurityConfig.getAccountPath() + '/' + account[SecurityConfig.getUserIdParam()], account);
         }
@@ -80,7 +84,7 @@
             logout: logout,
             authorize: authorize,
             updateAccount: updateAccount,
-            activateAccount: getAccount,
+            activateAccount: activateAccount,
             getAccount: getAccount,
             register: register,
             changePassword: changePassword,

@@ -10,6 +10,7 @@
         var _authPath = 'oauth/token';
         var _logoutPath = 'api/logout';
         var _registerPath = 'api/register';
+        var _activationPath = 'api/activate';
         var _accountPath = 'api/account';
         var _resendPasswordPath = 'api/account/resendPassword';
         var _newPasswordPath = 'api/account/newPassword';
@@ -35,6 +36,10 @@
 
         this.setRegisterPath = function(registerPath) {
             _registerPath = registerPath;
+        };
+
+        this.setActivationPath = function(activationPath) {
+            _activationPath = activationPath;
         };
 
         this.setAccountPath = function(accountPath) {
@@ -64,6 +69,7 @@
                 getAuthPath: function() { return _authPath; },
                 getLogoutPath: function() { return _logoutPath; },
                 getRegisterPath: function() { return _registerPath; },
+                getActivationPath: function() { return _activationPath; },
                 getAccountPath: function() { return _accountPath; },
                 getResendPasswordPath: function() { return _resendPasswordPath; },
                 getNewPasswordPath: function() { return _newPasswordPath; },
