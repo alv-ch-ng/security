@@ -55,7 +55,7 @@
                 // retrieve the identity data from the server, update the identity object, and then resolve.
                 $resource(SecurityConfig.getAccountPath()).get().$promise
                     .then(function (account) {
-                        _identity = account.data;
+                        _identity = account;
                         _authenticated = true;
                         deferred.resolve(_identity);
                     })
