@@ -316,7 +316,7 @@
 
         grunt.registerTask('all-test', [ 'htmlhint:templates', 'jshint-test', 'unit-test', 'complexity']);
         // CI
-        grunt.registerTask('travis', ['jshint', 'clean:build', 'unit-test', 'coveralls']);
+        grunt.registerTask('travis', ['jshint', 'clean:build', 'all-test', 'coveralls']);
 
         // Templates
         grunt.registerTask('templates', ['ngtemplates']);
