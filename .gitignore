@@ -3,5 +3,9 @@
 
 lib
 node_modules
+npm-debug.log
 build
-src/bower_components
+
+private
+src/example/fonts/frutiger
+src/example/fonts/adminchsymbols
