@@ -5,7 +5,7 @@
 
     module.factory('SecurityService', ['$rootScope', '$http', '$q', 'Principal', 'AuthServerProvider', 'SecurityConfig', function ($rootScope, $http, $q, Principal, AuthServerProvider, SecurityConfig) {
 
-        var _onAccessDenied = function() { };
+        var _onAccessDenied;
         var _onLoginFail = function() {};
 
         var _onLoginSuccess = function(identity) {
@@ -36,23 +36,26 @@
             Principal.authenticate(null);
         }
 
+        function checkAccess() {
+            if (!Principal.isIdentityResolved()) {
+                _onLoginRequired();
+            } else if (!Principal.isInAnyRole($rootScope.toState.data.roles) && angular.isFunction(_onAccessDenied)) {
+                _onAccessDenied();
+            }
+        }
+
         function authorize() {
             return Principal.identity(false, function() {
                 if ($rootScope.toState.data.roles &&
-                    $rootScope.toState.data.roles.length > 0 &&
-                    !Principal.isInAnyRole($rootScope.toState.data.roles)) {
-                    _onAccessDenied();
+                    $rootScope.toState.data.roles.length > 0) {
+                    _onLoginRequired();
                 }
             })
-            .then(function() {
-                if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0) {
-                    if (!Principal.isIdentityResolved()) {
-                        _onLoginRequired();
-                    } else if (!Principal.isInAnyRole($rootScope.toState.data.roles) && angular.isFunction(_onAccessDenied)) {
-                        _onAccessDenied();
+                .then(function() {
+                    if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0) {
+                        checkAccess();
                     }
-                }
-            });
+                });
         }
 
         function register(account) {
@@ -97,4 +100,3 @@
     }]);
 
 }());
-

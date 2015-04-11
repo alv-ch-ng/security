@@ -1,10 +1,9 @@
 ;(function () {
-
     'use strict';
 
     var module = angular.module('alv-ch-ng.security');
 
-    module.factory('AuthServerProvider', function($http, localStorageService, SecurityConfig, base64) {
+    module.factory('AuthServerProvider', ["$http", "localStorageService", "SecurityConfig", "base64", function($http, localStorageService, SecurityConfig, base64) {
 
         function createLoginData(credentials) {
             if (SecurityConfig.getAuthType() === 'oauth2') {
@@ -31,14 +30,11 @@
 
         }
 
-        function login(credentials) {
-            if (SecurityConfig.getAuthType() !== 'oauth2' && SecurityConfig.getAuthType() !== 'cookie') {
-                throw new Error('No or unknown authType found: "' + SecurityConfig.getAuthType() + '".');
-            }
-
-            var data = createLoginData(credentials);
-            var headers = createLoginHeaders();
-            return $http.post(SecurityConfig.getAuthPath(), data, {headers: headers, ignoreAuthModule: 'ignoreAuthModule'})
+        function createLoginRequest(data, headers) {
+            return $http.post(SecurityConfig.getAuthPath(), data, {
+                headers: headers,
+                ignoreAuthModule: 'ignoreAuthModule'
+            })
                 .success(function (response) {
                     if (SecurityConfig.getAuthType() === 'oauth2') {
                         var expiredAt = new Date();
@@ -46,7 +42,14 @@
                         response.expires_at = expiredAt.getTime();
                         localStorageService.set('token', response);
                     }
-            });
+                });
+        }
+
+        function login(credentials) {
+            if (SecurityConfig.getAuthType() !== 'oauth2' && SecurityConfig.getAuthType() !== 'cookie') {
+                throw new Error('No or unknown authType found: "' + SecurityConfig.getAuthType() + '".');
+            }
+            return createLoginRequest(createLoginData(credentials), createLoginHeaders());
         }
 
         function logout() {
@@ -71,6 +74,6 @@
             getToken: getToken,
             hasValidToken: hasValidToken
         };
-    });
+    }]);
 
 }());

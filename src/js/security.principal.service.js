@@ -1,46 +1,52 @@
-;(function() {
-
+;(function () {
     'use strict';
 
     var module = angular.module('alv-ch-ng.security');
 
-    module.factory('Principal', function Principal($q, $resource, SecurityConfig) {
-        var _identity = null,
-            _authenticated = false;
+    module.factory('Principal', ["$q", "$resource", "SecurityConfig", function($q, $resource, SecurityConfig) {
+        var _identity = null;
 
-        return {
+        function checkRoles(roles) {
+            var results = [];
+            for (var i = 0; i < roles.length; i++) {
+                results.push(service.isInRole(roles[i]));
+            }
+            return results;
+        }
+
+        function splitIfString(roles) {
+            if (angular.isString(roles)) {
+                return roles.split(',');
+            }
+            return roles;
+        }
+
+        var service = {
+            authenticated: false,
             isIdentityResolved: function () {
-                return _authenticated;
+                return service.authenticated;
             },
             isAuthenticated: function () {
-                return _authenticated;
+                return service.authenticated;
             },
             isInRole: function (role) {
                 if (!role) {
                     return true;
                 }
-                if (!_authenticated || !_identity.roles) {
+                if (!service.authenticated || !_identity.roles) {
                     return false;
                 }
-
-                return _identity.roles.indexOf(role) !== -1;
+                return _identity.roles.indexOf(role.trim()) !== -1;
             },
             isInAnyRole: function (roles) {
                 if (!roles || roles.length === 0) {
                     return true;
                 }
-
-                for (var i = 0; i < roles.length; i++) {
-                    if (this.isInRole(roles[i])) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return checkRoles(splitIfString(roles)).indexOf(true) > -1;
             },
             authenticate: function (identity) {
                 _identity = identity;
-                _authenticated = identity !== null;
+                service.authenticated = identity !== null;
             },
             identity: function (force, onUnAuthenticated) {
                 var deferred = $q.defer();
@@ -56,12 +62,12 @@
                 $resource(SecurityConfig.getAccountPath()).get().$promise
                     .then(function (account) {
                         _identity = account;
-                        _authenticated = true;
+                        service.authenticated = true;
                         deferred.resolve(_identity);
                     })
                     .catch(function() {
                         _identity = null;
-                        _authenticated = false;
+                        service.authenticated = false;
                         if (angular.isFunction(onUnAuthenticated)) {
                             onUnAuthenticated();
                         }
@@ -70,7 +76,8 @@
                 return deferred.promise;
             }
         };
-    });
+
+        return service;
+    }]);
+
 }());
-
-

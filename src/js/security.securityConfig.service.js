@@ -77,8 +77,6 @@
                 getAuthType: function() { return _authType; }
             };
         };
-
     });
 
 }());
-

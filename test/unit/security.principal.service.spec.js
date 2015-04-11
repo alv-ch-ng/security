@@ -40,6 +40,8 @@
                 Principal.authenticate({ roles: [ 'expectedRole' ] });
                 expect(Principal.isInAnyRole(['dummyRole', 'expectedRole'])).toBeTruthy();
                 expect(Principal.isInAnyRole(['dummyRole', 'dummyRole2'])).toBeFalsy();
+                expect(Principal.isInAnyRole('dummyRole, expectedRole')).toBeTruthy();
+                expect(Principal.isInAnyRole('dummyRole, dummyRole2')).toBeFalsy();
             });
         });
 
