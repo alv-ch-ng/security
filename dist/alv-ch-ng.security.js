@@ -1,18 +1,126 @@
-/* alv-ch-ng.security - 0.2.0 - 2015-04-11 - Copyright (c) 2015 Informatik der Arbeitslosenversicherung; */
+/* alv-ch-ng.security - 0.2.0 - 2015-04-14 - Copyright (c) 2015 Informatik der Arbeitslosenversicherung; */
 ;(function () {
     'use strict';
 
-    var module = angular.module('alv-ch-ng.security', ['ngResource', 'LocalStorageModule', 'ab-base64']);
+    var module = angular.module('alv-ch-ng.security', ['ngResource', 'ui.router', 'LocalStorageModule', 'pascalprecht.translate', 'ab-base64']);
 
-    module.run(function($rootScope, Principal, SecurityService) {
+    module.config(function ($stateProvider) {
+        $stateProvider.state('login', {
+            parent: 'site',
+            url: '/login',
+            views: {
+                'content@': {
+                    templateUrl: 'template/alvchsecurity/login.html',
+                    controller: 'SecurityCtrl'
+                }
+            },
+            hidden: true
+        });
+        $stateProvider.state('accessdenied', {
+            parent: 'site',
+            url: '/accessdenied',
+            views: {
+                'content@': {
+                    templateUrl: 'template/alvchsecurity/accessdenied.html'
+                }
+            },
+            hidden: true
+        });
+    });
+
+    module.run(function($rootScope, Principal, $state, SecurityService) {
+
+        var STATE_LOGIN = 'login';
+        var STATE_ACCESS_DENIED = 'accessdenied';
+
+        function redirectTo(redirectTarget, event) {
+            event.preventDefault();
+            $state.go(redirectTarget);
+        }
+
+        function checkAuthenticationRemotely(event) {
+            SecurityService.getUserAccount().success(function (result) {
+                Principal.authenticate(result);
+            }).error(function () {
+                redirectTo(STATE_LOGIN, event);
+            });
+        }
+
+        function checkAuthorization(event) {
+            if (Principal.isIdentityResolved() && !Principal.isInAnyRole($rootScope.toState.data.roles)) {
+                redirectTo(STATE_ACCESS_DENIED, event);
+            } else if (!Principal.isIdentityResolved()) {
+                checkAuthorizationRemotely(event);
+            }
+        }
+
+        function checkAuthorizationRemotely(event) {
+            SecurityService.getUserAccount().success(function (result) {
+                Principal.authenticate(result);
+                if (!Principal.isInAnyRole($rootScope.toState.data.roles)) {
+                    redirectTo(STATE_ACCESS_DENIED, event);
+                }
+            }).error(function () {
+                redirectTo(STATE_LOGIN, event);
+            });
+        }
+
+        function checkAccess(event) {
+            if ($rootScope.toState.data.authenticated && !Principal.isIdentityResolved()) {
+                checkAuthenticationRemotely(event);
+            } else if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0) {
+                checkAuthorization(event);
+            }
+        }
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams) {
             $rootScope.toState = toState;
             $rootScope.toStateParams = toStateParams;
-            if (Principal.isIdentityResolved()) {
-                SecurityService.authorize();
+            if (!$rootScope.toState.data) {
+                return;
+            }
+            checkAccess(event);
+        });
+    });
+
+}());
+;;(function () {
+    'use strict';
+
+    var module = angular.module('alv-ch-ng.security');
+
+    module.config(function($translateProvider) {
+
+        $translateProvider.translations('de', {
+                "errors": {
+                    "title": "Fehlerseite!",
+                    "403": "Sie haben nicht die nötigen Berechtigungen diese Seite anzuzeigen."
+                }
+            }
+        );
+
+        $translateProvider.translations('fr', {
+            "errors": {
+                "title": "Page d'erreur!",
+                "403": "Vous n'avez pas les droits pour accéder à cette page."
             }
         });
+
+        $translateProvider.translations('it', {
+            "errors": {
+                "title": "[IT] Fehlerseite!",
+                "403": "[IT] Sie haben nicht die nötigen Berechtigungen diese Seite anzuzeigen."
+            }
+        });
+
+        $translateProvider.translations('en', {
+            "errors": {
+                "title": "Error page!",
+                "403": "You are not authorized to access the page."
+            }
+        });
+
+
     });
 
 }());
@@ -187,25 +295,112 @@
     });
 
 }());
+;;(function () {
+    'use strict';
+
+    var module = angular.module('alv-ch-ng.security');
+
+    module.config(function($translateProvider) {
+
+        $translateProvider.translations('de', {
+            "login": {
+                "title": "Anmelden",
+                "form": {
+                    "password": "Passwort",
+                    "password.placeholder": "Dein Passwort",
+                    "rememberme": "angemeldet bleiben",
+                    "button": "Anmelden"
+                },
+                "messages": {
+                    "error": {
+                        "authentication": "<strong>Anmelden fehlgeschlagen!</strong> Bitte überprüfen Sie Ihre Eingaben."
+                    }
+                }
+            }
+        });
+
+        $translateProvider.translations('fr', {
+            "login": {
+                "title": "Authentification",
+                "form": {
+                    "password": "Mot de passe",
+                    "password.placeholder": "Votre mot de passe",
+                    "rememberme": "Garder la session ouverte",
+                    "button": "Connexion"
+                },
+                "messages": {
+                    "error": {
+                        "authentication": "<strong>Erreur d'authentification!</strong> Veuillez vérifier vos identifiants de connexion."
+                    }
+                }
+            }
+        });
+
+        $translateProvider.translations('it', {
+            "login": {
+                "title": "[IT] Authentication",
+                "form": {
+                    "password": "[IT] Password",
+                    "password.placeholder": "[IT] Your password",
+                    "rememberme": "[IT] Automatic Login",
+                    "button": "[IT] Authenticate"
+                },
+                "messages": {
+                    "error": {
+                        "authentication": "[IT] <strong>Authentication failed!</strong> Please check your credentials and try again."
+                    }
+                }
+            }
+        });
+
+        $translateProvider.translations('en', {
+            "login": {
+                "title": "Login",
+                "form": {
+                    "password": "Password",
+                    "password.placeholder": "Your password",
+                    "rememberme": "Automatic login",
+                    "button": "Anmelden"
+                },
+                "messages": {
+                    "error": {
+                        "authentication": "<strong>Authentication failed!</strong> Please check your credentials and try again."
+                    }
+                }
+            }
+        });
+
+
+    });
+
+}());
 ;;(function() {
 
     'use strict';
 
     var module = angular.module('alv-ch-ng.security');
 
-    module.directive('login', function() {
+    module.controller('LoginCtrl', ['$scope', '$timeout', 'SecurityService', function($scope, $timeout, SecurityService) {
 
-        return {
-            restrict: 'E',
-            replace: true,
-            controller: 'SecurityCtrl',
-            link: function() {
+        $scope.userName = '';
+        $scope.password = '';
+        $scope.rememberMe = true;
 
+        $scope.errors = {};
 
+        $timeout(function () {
+            angular.element('[ng-model="username"]').focus();
+        });
 
-            }
+        $scope.login = function () {
+            SecurityService.login({
+                username: $scope.username,
+                password: $scope.password,
+                rememberMe: $scope.rememberMe
+            });
         };
-    });
+
+    }]);
 }());
 
 
@@ -214,7 +409,7 @@
 
     var module = angular.module('alv-ch-ng.security');
 
-    module.factory('Principal', ["$q", "$resource", "SecurityConfig", function($q, $resource, SecurityConfig) {
+    module.factory('Principal', function() {
         var _identity = null;
 
         function checkRoles(roles) {
@@ -235,7 +430,7 @@
         var service = {
             authenticated: false,
             isIdentityResolved: function () {
-                return service.authenticated;
+                return _identity ? true : false;
             },
             isAuthenticated: function () {
                 return service.authenticated;
@@ -259,37 +454,13 @@
                 _identity = identity;
                 service.authenticated = identity !== null;
             },
-            identity: function (force, onUnAuthenticated) {
-                var deferred = $q.defer();
-
-                // check and see if we have retrieved the identity data from the server.
-                // if we have, reuse it by immediately resolving
-                if (_identity !== null && !force) {
-                    deferred.resolve(_identity);
-                    return deferred.promise;
-                }
-
-                // retrieve the identity data from the server, update the identity object, and then resolve.
-                $resource(SecurityConfig.getAccountPath()).get().$promise
-                    .then(function (account) {
-                        _identity = account;
-                        service.authenticated = true;
-                        deferred.resolve(_identity);
-                    })
-                    .catch(function() {
-                        _identity = null;
-                        service.authenticated = false;
-                        if (angular.isFunction(onUnAuthenticated)) {
-                            onUnAuthenticated();
-                        }
-                        deferred.resolve(_identity);
-                    });
-                return deferred.promise;
+            getIdentity: function() {
+                return _identity;
             }
         };
 
         return service;
-    }]);
+    });
 
 }());
 ;;(function () {
@@ -384,7 +555,8 @@
 
         $scope.credentials = {
             username: '',
-            password: ''
+            password: '',
+            rememberMe: false
         };
 
         $scope.login = function() {
@@ -395,7 +567,8 @@
             SecurityService.logout();
             $scope.credentials = {
                 username: '',
-                password: ''
+                password: '',
+                rememberMe: false
             };
         };
 
@@ -410,21 +583,19 @@
 
     module.factory('SecurityService', ['$rootScope', '$http', '$q', 'Principal', 'AuthServerProvider', 'SecurityConfig', function ($rootScope, $http, $q, Principal, AuthServerProvider, SecurityConfig) {
 
-        var _onAccessDenied;
-        var _onLoginFail = function() {};
+        var _onLoginFail = function() {
+            $rootScope.loginError = true;
+        };
 
         var _onLoginSuccess = function(identity) {
             Principal.authenticate(identity);
-        };
-
-        var _onLoginRequired = function() {
-            $rootScope.returnToState = $rootScope.toState;
-            $rootScope.returnToStateParams = $rootScope.toStateParams;
+            $rootScope.back();
         };
 
         function login(credentials) {
             AuthServerProvider.login(credentials).success(function () {
-                Principal.identity(true).then(function(account) {
+                $http.get(SecurityConfig.getAccountPath()).success(function(account) {
+                    Principal.authenticate(account);
                     if (angular.isFunction(_onLoginSuccess)) {
                         _onLoginSuccess(account);
                     }
@@ -441,28 +612,6 @@
             Principal.authenticate(null);
         }
 
-        function checkAccess() {
-            if (!Principal.isIdentityResolved()) {
-                _onLoginRequired();
-            } else if (!Principal.isInAnyRole($rootScope.toState.data.roles) && angular.isFunction(_onAccessDenied)) {
-                _onAccessDenied();
-            }
-        }
-
-        function authorize() {
-            return Principal.identity(false, function() {
-                if ($rootScope.toState.data.roles &&
-                    $rootScope.toState.data.roles.length > 0) {
-                    _onLoginRequired();
-                }
-            })
-                .then(function() {
-                    if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0) {
-                        checkAccess();
-                    }
-                });
-        }
-
         function register(account) {
             return $http.post(SecurityConfig.getRegisterPath(), account);
         }
@@ -473,6 +622,10 @@
 
         function updateAccount(account) {
             return $http.post(SecurityConfig.getAccountPath() + '/' + account[SecurityConfig.getUserIdParam()], account);
+        }
+
+        function getUserAccount() {
+            return $http.get(SecurityConfig.getAccountPath());
         }
 
         function getAccount(key) {
@@ -490,17 +643,15 @@
         return {
             login: login,
             logout: logout,
-            authorize: authorize,
             updateAccount: updateAccount,
             activateAccount: activateAccount,
             getAccount: getAccount,
+            getUserAccount: getUserAccount,
             register: register,
             changePassword: changePassword,
             resendPassword: resendPassword,
             setOnLoginSuccess: function(onLoginSuccess) { _onLoginSuccess =  onLoginSuccess; },
-            setOnLoginFail: function(onLoginFail) { _onLoginFail =  onLoginFail; },
-            setOnAccessDenied: function(onAccessDenied) { _onAccessDenied =  onAccessDenied; },
-            setOnLoginRequired: function(onLoginRequired) { _onLoginRequired =  onLoginRequired; }
+            setOnLoginFail: function(onLoginFail) { _onLoginFail =  onLoginFail; }
         };
     }]);
 

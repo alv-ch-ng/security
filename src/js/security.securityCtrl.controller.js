@@ -8,7 +8,8 @@
 
         $scope.credentials = {
             username: '',
-            password: ''
+            password: '',
+            rememberMe: false
         };
 
         $scope.login = function() {
@@ -19,7 +20,8 @@
             SecurityService.logout();
             $scope.credentials = {
                 username: '',
-                password: ''
+                password: '',
+                rememberMe: false
             };
         };
 

@@ -6,9 +6,10 @@
         beforeEach(module('alv-ch-ng.security'));
 
         it('"login()" passes silently when login is successful and no custom "_onLoginSuccess()" fn is set.', function() {
-            inject(function ($httpBackend, SecurityService, SecurityConfig) {
+            inject(function ($rootScope, $httpBackend, SecurityService, SecurityConfig) {
                 $httpBackend.expectPOST(SecurityConfig.getAuthPath()).respond(200, { 'userName': 'testUserName' });
                 $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, { 'userName': 'testUserName' });
+                $rootScope.back = function(){};
                 SecurityService.login({ 'userName': 'testUserName', 'password': 'testPassword' });
                 $httpBackend.flush();
                 expect(true).toEqual(true);
@@ -81,127 +82,6 @@
                 expect(Principal.isAuthenticated()).toBeFalsy();
             });
         });
-
-        it('"authorize()" calls _onLoginRequired if no identity is present but a role is needed', function() {
-            inject(function ($rootScope, $httpBackend, SecurityService, SecurityConfig) {
-                $rootScope.toState = {
-                    data: {
-                        roles: ['testRole']
-                    }
-                };
-                $rootScope.toStateParams = {
-                    anyName: 'anyValue'
-                };
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(400);
-                SecurityService.authorize();
-                $httpBackend.flush();
-                expect($rootScope.returnToState).toBe($rootScope.toState);
-                expect($rootScope.returnToStateParams).toBe($rootScope.toStateParams);
-            });
-        });
-
-        it('"authorize()" passes silently if no role is needed', function() {
-            inject(function ($rootScope, $httpBackend, SecurityService, SecurityConfig) {
-                var callback = {
-                    required: function() { },
-                    denied: function() { }
-                };
-                spyOn(callback, 'required');
-                spyOn(callback, 'denied');
-                SecurityService.setOnLoginRequired(callback.required);
-                SecurityService.setOnAccessDenied(callback.denied);
-                $rootScope.toState = {
-                    data: {
-                        roles: []
-                    }
-                };
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(400);
-                SecurityService.authorize();
-                $httpBackend.flush();
-                expect(callback.required).not.toHaveBeenCalled();
-                expect(callback.denied).not.toHaveBeenCalled();
-            });
-        });
-
-        it('"authorize()" passes silently if access is granted', function() {
-            inject(function ($rootScope, $httpBackend, SecurityService, SecurityConfig) {
-                var callback = {
-                    required: function() { },
-                    denied: function() { }
-                };
-                spyOn(callback, 'required');
-                spyOn(callback, 'denied');
-                SecurityService.setOnLoginRequired(callback.required);
-                SecurityService.setOnAccessDenied(callback.denied);
-                $rootScope.toState = {
-                    data: {
-                        roles: ['grantingRole']
-                    }
-                };
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, localPrincipal);
-                SecurityService.authorize();
-                $httpBackend.flush();
-                expect(callback.required).not.toHaveBeenCalled();
-                expect(callback.denied).not.toHaveBeenCalled();
-            });
-        });
-
-        it('"authorize()" calls _onLoginRequired if no identity is present but a role is needed', function() {
-            inject(function ($rootScope, $httpBackend, SecurityService, SecurityConfig) {
-                $rootScope.toState = {
-                    data: {
-                        roles: ['testRole']
-                    }
-                };
-                $rootScope.toStateParams = {
-                    anyName: 'anyValue'
-                };
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(400);
-                SecurityService.authorize();
-                $httpBackend.flush();
-                expect($rootScope.returnToState).toBe($rootScope.toState);
-                expect($rootScope.returnToStateParams).toBe($rootScope.toStateParams);
-            });
-        });
-
-        it('"authorize()" calls _onAccessDenied when the required roles are not given', function() {
-            inject(function ($rootScope, $httpBackend, SecurityService, Principal) {
-                var cb = {
-                    fn: function() { }
-                };
-                spyOn(cb, 'fn');
-                SecurityService.setOnAccessDenied(cb.fn);
-                Principal.authenticate(localPrincipal);
-                $rootScope.toState = {
-                    data: {
-                        roles: ['mustHave']
-                    }
-                };
-                SecurityService.authorize().then(function() {
-                    expect(cb.fn).toHaveBeenCalled();
-                });
-            });
-        });
-
-        it('"authorize()" uses a custom accessDenied listener when set', function() {
-            inject(function ($rootScope, $httpBackend, SecurityService, SecurityConfig) {
-                var callback = {
-                    fn: function() { }
-                };
-                spyOn(callback, 'fn');
-                SecurityService.setOnAccessDenied(callback.fn);
-                $rootScope.toState = {
-                    data: {
-                        roles: ['mustHave']
-                    }
-                };
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, {data: localPrincipal} );
-                SecurityService.authorize();
-                $httpBackend.flush();
-                expect(callback.fn).toHaveBeenCalled();
-            });
-        });
-
 
         it('"register()" executes a request to "api/register" ', function() {
             inject(function ($httpBackend, SecurityService, SecurityConfig) {

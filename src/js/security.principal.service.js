@@ -3,7 +3,7 @@
 
     var module = angular.module('alv-ch-ng.security');
 
-    module.factory('Principal', ["$q", "$resource", "SecurityConfig", function($q, $resource, SecurityConfig) {
+    module.factory('Principal', function() {
         var _identity = null;
 
         function checkRoles(roles) {
@@ -24,7 +24,7 @@
         var service = {
             authenticated: false,
             isIdentityResolved: function () {
-                return service.authenticated;
+                return _identity ? true : false;
             },
             isAuthenticated: function () {
                 return service.authenticated;
@@ -48,36 +48,12 @@
                 _identity = identity;
                 service.authenticated = identity !== null;
             },
-            identity: function (force, onUnAuthenticated) {
-                var deferred = $q.defer();
-
-                // check and see if we have retrieved the identity data from the server.
-                // if we have, reuse it by immediately resolving
-                if (_identity !== null && !force) {
-                    deferred.resolve(_identity);
-                    return deferred.promise;
-                }
-
-                // retrieve the identity data from the server, update the identity object, and then resolve.
-                $resource(SecurityConfig.getAccountPath()).get().$promise
-                    .then(function (account) {
-                        _identity = account;
-                        service.authenticated = true;
-                        deferred.resolve(_identity);
-                    })
-                    .catch(function() {
-                        _identity = null;
-                        service.authenticated = false;
-                        if (angular.isFunction(onUnAuthenticated)) {
-                            onUnAuthenticated();
-                        }
-                        deferred.resolve(_identity);
-                    });
-                return deferred.promise;
+            getIdentity: function() {
+                return _identity;
             }
         };
 
         return service;
-    }]);
+    });
 
 }());

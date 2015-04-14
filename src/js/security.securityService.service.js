@@ -5,21 +5,19 @@
 
     module.factory('SecurityService', ['$rootScope', '$http', '$q', 'Principal', 'AuthServerProvider', 'SecurityConfig', function ($rootScope, $http, $q, Principal, AuthServerProvider, SecurityConfig) {
 
-        var _onAccessDenied;
-        var _onLoginFail = function() {};
+        var _onLoginFail = function() {
+            $rootScope.loginError = true;
+        };
 
         var _onLoginSuccess = function(identity) {
             Principal.authenticate(identity);
-        };
-
-        var _onLoginRequired = function() {
-            $rootScope.returnToState = $rootScope.toState;
-            $rootScope.returnToStateParams = $rootScope.toStateParams;
+            $rootScope.back();
         };
 
         function login(credentials) {
             AuthServerProvider.login(credentials).success(function () {
-                Principal.identity(true).then(function(account) {
+                $http.get(SecurityConfig.getAccountPath()).success(function(account) {
+                    Principal.authenticate(account);
                     if (angular.isFunction(_onLoginSuccess)) {
                         _onLoginSuccess(account);
                     }
@@ -36,28 +34,6 @@
             Principal.authenticate(null);
         }
 
-        function checkAccess() {
-            if (!Principal.isIdentityResolved()) {
-                _onLoginRequired();
-            } else if (!Principal.isInAnyRole($rootScope.toState.data.roles) && angular.isFunction(_onAccessDenied)) {
-                _onAccessDenied();
-            }
-        }
-
-        function authorize() {
-            return Principal.identity(false, function() {
-                if ($rootScope.toState.data.roles &&
-                    $rootScope.toState.data.roles.length > 0) {
-                    _onLoginRequired();
-                }
-            })
-                .then(function() {
-                    if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0) {
-                        checkAccess();
-                    }
-                });
-        }
-
         function register(account) {
             return $http.post(SecurityConfig.getRegisterPath(), account);
         }
@@ -68,6 +44,10 @@
 
         function updateAccount(account) {
             return $http.post(SecurityConfig.getAccountPath() + '/' + account[SecurityConfig.getUserIdParam()], account);
+        }
+
+        function getUserAccount() {
+            return $http.get(SecurityConfig.getAccountPath());
         }
 
         function getAccount(key) {
@@ -85,17 +65,15 @@
         return {
             login: login,
             logout: logout,
-            authorize: authorize,
             updateAccount: updateAccount,
             activateAccount: activateAccount,
             getAccount: getAccount,
+            getUserAccount: getUserAccount,
             register: register,
             changePassword: changePassword,
             resendPassword: resendPassword,
             setOnLoginSuccess: function(onLoginSuccess) { _onLoginSuccess =  onLoginSuccess; },
-            setOnLoginFail: function(onLoginFail) { _onLoginFail =  onLoginFail; },
-            setOnAccessDenied: function(onAccessDenied) { _onAccessDenied =  onAccessDenied; },
-            setOnLoginRequired: function(onLoginRequired) { _onLoginRequired =  onLoginRequired; }
+            setOnLoginFail: function(onLoginFail) { _onLoginFail =  onLoginFail; }
         };
     }]);
 

@@ -170,6 +170,8 @@
                             'lib/angular/angular.js',
                             'lib/angular-mocks/angular-mocks.js',
                             'lib/angular-resource/angular-resource.js',
+                            'lib/angular-translate/angular-translate.js',
+                            'lib/angular-ui-router/release/angular-ui-router.js',
                             'lib/angular-local-storage/dist/angular-local-storage.js',
                             'lib/angular-utf8-base64/angular-utf8-base64.js',
                             'node_modules/grunt-contrib-jasmine/vendor/jasmine-2.0.0/jasmine.js'

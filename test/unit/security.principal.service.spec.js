@@ -45,36 +45,11 @@
             });
         });
 
-        it('"identity()" uses the local entity if it is present" ', function() {
-            inject(function ($httpBackend, Principal) {
-                Principal.authenticate(localPrincipal);
-                Principal.identity().then(function(identity) {
-                    expect(identity).toBe(localPrincipal);
-                });
-            });
-        });
-
-        it('"identity()" with force === true fetches a remote entity if it is present" ', function() {
-            inject(function ($httpBackend, Principal, SecurityConfig) {
-                Principal.authenticate(localPrincipal);
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, remotePrincipal  );
-                Principal.identity(true).then(function(identity) {
-                    expect(identity.key).toEqual(remotePrincipal.key);
-                    expect(identity.userName).toEqual(remotePrincipal.userName);
-                });
-                $httpBackend.flush();
-            });
-        });
-
-        it('"identity()" resets the state when account cannot be fetched" ', function() {
-            inject(function ($httpBackend, Principal, SecurityConfig) {
-                Principal.authenticate(localPrincipal);
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(400);
-                Principal.identity(true).then(function() {
-                    expect(Principal.isIdentityResolved()).toBeFalsy();
-                    expect(Principal.isAuthenticated()).toBeFalsy();
-                });
-                $httpBackend.flush();
+        it('offers a identity getter', function() {
+            inject(function (Principal) {
+                var user = { userName: 'fred'};
+                Principal.authenticate(user);
+                expect(Principal.getIdentity()).toEqual(user);
             });
         });
 
