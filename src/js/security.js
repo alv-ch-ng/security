@@ -9,7 +9,7 @@
             url: '/login',
             views: {
                 'content@': {
-                    templateUrl: 'template/alvchsecurity/login.html',
+                    templateUrl: 'template/security/login.html',
                     controller: 'SecurityCtrl'
                 }
             },
@@ -20,7 +20,7 @@
             url: '/accessdenied',
             views: {
                 'content@': {
-                    templateUrl: 'template/alvchsecurity/accessdenied.html'
+                    templateUrl: 'template/security/accessdenied.html'
                 }
             },
             hidden: true

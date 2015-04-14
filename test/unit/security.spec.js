@@ -101,7 +101,7 @@
 
             it('checks authorization with failure when required roles are not present', function() {
                 inject(function ($rootScope, $httpBackend, $state, Principal) {
-                    $httpBackend.expectGET('template/alvchsecurity/accessdenied.html').respond(200, {});
+                    $httpBackend.expectGET('template/security/accessdenied.html').respond(200, {});
                     Principal.authenticate({roles: ['ROLE_TESTFAIL']});
                     $rootScope.toState = {
                         data: {
@@ -120,7 +120,6 @@
                     $httpBackend.expectGET('api/account').respond(200, {
                         roles: ['ROLE_TEST']
                     });
-                    //$httpBackend.expectGET('template/alvchsecurity/accessdenied.html').respond(200, {});
                     $rootScope.toState = {
                         data: {
                             roles: ['ROLE_TEST']
@@ -138,7 +137,7 @@
                     $httpBackend.expectGET('api/account').respond(200, {
                         roles: ['ROLE_TESTFAIL']
                     });
-                    $httpBackend.expectGET('template/alvchsecurity/accessdenied.html').respond(200, {});
+                    $httpBackend.expectGET('template/security/accessdenied.html').respond(200, {});
                     $rootScope.toState = {
                         data: {
                             roles: ['ROLE_TEST']
@@ -156,7 +155,7 @@
                     $httpBackend.expectGET('api/account').respond(401, {
                         roles: ['ROLE_TESTFAIL']
                     });
-                    $httpBackend.expectGET('template/alvchsecurity/login.html').respond(200, {});
+                    $httpBackend.expectGET('template/security/login.html').respond(200, {});
                     $rootScope.toState = {
                         data: {
                             roles: ['ROLE_TEST']
@@ -177,7 +176,7 @@
                     expect(loginState.name).toBe('login');
                     expect(loginState.parent).toBe('site');
                     expect(loginState.url).toBe('/login');
-                    expect(loginState.views['content@'].templateUrl).toBe('template/alvchsecurity/login.html');
+                    expect(loginState.views['content@'].templateUrl).toBe('template/security/login.html');
                     expect(loginState.views['content@'].controller).toBe('SecurityCtrl');
                     expect(loginState.hidden).toBeTruthy();
                     expect(loginState.data).toBeFalsy();
@@ -190,7 +189,7 @@
                     expect(loginState.name).toBe('accessdenied');
                     expect(loginState.parent).toBe('site');
                     expect(loginState.url).toBe('/accessdenied');
-                    expect(loginState.views['content@'].templateUrl).toBe('template/alvchsecurity/accessdenied.html');
+                    expect(loginState.views['content@'].templateUrl).toBe('template/security/accessdenied.html');
                     expect(loginState.views['content@'].controller).toBeFalsy();
                     expect(loginState.hidden).toBeTruthy();
                 });

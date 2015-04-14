@@ -266,7 +266,7 @@
             },
             complexity: {
                 generic: {
-                    src: ['src/js/**/*.js', '!src/js/**/*.templates.js'],
+                    src: ['src/js/**/*.js', '!src/js/**/*.templates.js', '!src/js/**/*.translations.js'],
                     exclude: [],
                     options: {
                         breakOnErrors: true,
@@ -324,7 +324,7 @@
         grunt.registerTask('templates', ['ngtemplates']);
 
         // DEV
-        grunt.registerTask('build', ['templates','all-test', 'concat:prod', 'copy:example','uglify:prod','uglify:example']);
+        grunt.registerTask('build', ['templates', 'all-test', 'concat:prod', 'copy:example','uglify:prod','uglify:example']);
         grunt.registerTask('dev', ['build', 'browserSync:dev', 'watch']);
 
         // Default task.
