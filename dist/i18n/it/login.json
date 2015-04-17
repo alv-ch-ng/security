@@ -1,0 +1,16 @@
+{
+  "login": {
+    "title": "[IT] Authentication",
+    "form": {
+      "password": "[IT] Password",
+      "password.placeholder": "[IT] Your password",
+      "rememberme": "[IT] Automatic Login",
+      "button": "[IT] Authenticate"
+    },
+    "messages": {
+      "error": {
+        "authentication": "[IT] <strong>Authentication failed!</strong> Please check your credentials and try again."
+      }
+    }
+  }
+}

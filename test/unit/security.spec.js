@@ -177,7 +177,7 @@
                     expect(loginState.parent).toBe('site');
                     expect(loginState.url).toBe('/login');
                     expect(loginState.views['content@'].templateUrl).toBe('template/security/login.html');
-                    expect(loginState.views['content@'].controller).toBe('SecurityCtrl');
+                    expect(loginState.views['content@'].controller).toBe('LoginCtrl');
                     expect(loginState.hidden).toBeTruthy();
                     expect(loginState.data).toBeFalsy();
                 });

@@ -1,4 +1,4 @@
-/* alv-ch-ng.security - 0.2.0 - 2015-04-14 - Copyright (c) 2015 Informatik der Arbeitslosenversicherung; */
+/* alv-ch-ng.security - 0.2.0 - 2015-04-17 - Copyright (c) 2015 Informatik der Arbeitslosenversicherung; */
 ;(function () {
     'use strict';
 
@@ -10,8 +10,8 @@
             url: '/login',
             views: {
                 'content@': {
-                    templateUrl: 'template/alvchsecurity/login.html',
-                    controller: 'SecurityCtrl'
+                    templateUrl: 'template/security/login.html',
+                    controller: 'LoginCtrl'
                 }
             },
             hidden: true
@@ -21,7 +21,7 @@
             url: '/accessdenied',
             views: {
                 'content@': {
-                    templateUrl: 'template/alvchsecurity/accessdenied.html'
+                    templateUrl: 'template/security/accessdenied.html'
                 }
             },
             hidden: true
@@ -81,46 +81,6 @@
             }
             checkAccess(event);
         });
-    });
-
-}());
-;;(function () {
-    'use strict';
-
-    var module = angular.module('alv-ch-ng.security');
-
-    module.config(function($translateProvider) {
-
-        $translateProvider.translations('de', {
-                "errors": {
-                    "title": "Fehlerseite!",
-                    "403": "Sie haben nicht die nötigen Berechtigungen diese Seite anzuzeigen."
-                }
-            }
-        );
-
-        $translateProvider.translations('fr', {
-            "errors": {
-                "title": "Page d'erreur!",
-                "403": "Vous n'avez pas les droits pour accéder à cette page."
-            }
-        });
-
-        $translateProvider.translations('it', {
-            "errors": {
-                "title": "[IT] Fehlerseite!",
-                "403": "[IT] Sie haben nicht die nötigen Berechtigungen diese Seite anzuzeigen."
-            }
-        });
-
-        $translateProvider.translations('en', {
-            "errors": {
-                "title": "Error page!",
-                "403": "You are not authorized to access the page."
-            }
-        });
-
-
     });
 
 }());
@@ -292,85 +252,6 @@
                 });
             }
         };
-    });
-
-}());
-;;(function () {
-    'use strict';
-
-    var module = angular.module('alv-ch-ng.security');
-
-    module.config(function($translateProvider) {
-
-        $translateProvider.translations('de', {
-            "login": {
-                "title": "Anmelden",
-                "form": {
-                    "password": "Passwort",
-                    "password.placeholder": "Dein Passwort",
-                    "rememberme": "angemeldet bleiben",
-                    "button": "Anmelden"
-                },
-                "messages": {
-                    "error": {
-                        "authentication": "<strong>Anmelden fehlgeschlagen!</strong> Bitte überprüfen Sie Ihre Eingaben."
-                    }
-                }
-            }
-        });
-
-        $translateProvider.translations('fr', {
-            "login": {
-                "title": "Authentification",
-                "form": {
-                    "password": "Mot de passe",
-                    "password.placeholder": "Votre mot de passe",
-                    "rememberme": "Garder la session ouverte",
-                    "button": "Connexion"
-                },
-                "messages": {
-                    "error": {
-                        "authentication": "<strong>Erreur d'authentification!</strong> Veuillez vérifier vos identifiants de connexion."
-                    }
-                }
-            }
-        });
-
-        $translateProvider.translations('it', {
-            "login": {
-                "title": "[IT] Authentication",
-                "form": {
-                    "password": "[IT] Password",
-                    "password.placeholder": "[IT] Your password",
-                    "rememberme": "[IT] Automatic Login",
-                    "button": "[IT] Authenticate"
-                },
-                "messages": {
-                    "error": {
-                        "authentication": "[IT] <strong>Authentication failed!</strong> Please check your credentials and try again."
-                    }
-                }
-            }
-        });
-
-        $translateProvider.translations('en', {
-            "login": {
-                "title": "Login",
-                "form": {
-                    "password": "Password",
-                    "password.placeholder": "Your password",
-                    "rememberme": "Automatic login",
-                    "button": "Anmelden"
-                },
-                "messages": {
-                    "error": {
-                        "authentication": "<strong>Authentication failed!</strong> Please check your credentials and try again."
-                    }
-                }
-            }
-        });
-
-
     });
 
 }());
@@ -656,7 +537,54 @@
     }]);
 
 }());
-;;'use strict';
+;angular.module('alv-ch-ng.security').run(['$templateCache', function($templateCache) {
+  'use strict';
+
+  $templateCache.put('template/security/accessdenied.html',
+    "<div ng-cloak>\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"col-md-12\">\n" +
+    "            <h1 translate=\"errors.title\">Error Page!</h1>\n" +
+    "\n" +
+    "            <div class=\"alert alert-danger\" translate=\"errors.403\"></div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('template/security/login.html',
+    "<div>\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"col-md-4 col-md-offset-4\">\n" +
+    "            <h1 translate=\"login.title\">Authentication</h1>\n" +
+    "\n" +
+    "            <div class=\"alert alert-danger\" ng-show=\"authenticationError\"\n" +
+    "                 translate=\"login.messages.error.authentication\">\n" +
+    "                <strong>Authentication failed!</strong> Please check your credentials and try again.\n" +
+    "            </div>\n" +
+    "            <form class=\"form\" role=\"form\">\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <label for=\"username\" translate=\"global.form.username\">Login</label>\n" +
+    "                    <input type=\"text\" class=\"form-control\" id=\"username\"\n" +
+    "                           placeholder=\"{{'global.form.username.placeholder' | translate}}\" ng-model=\"username\" />\n" +
+    "                </div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <label for=\"password\" translate=\"login.form.password\">Password</label>\n" +
+    "                    <input type=\"password\" class=\"form-control\" id=\"password\"\n" +
+    "                           placeholder=\"{{'login.form.password.placeholder' | translate}}\" ng-model=\"password\" />\n" +
+    "                </div>\n" +
+    "                <button type=\"submit\" class=\"btn btn-primary\" ng-click=\"login()\" translate=\"login.form.button\">\n" +
+    "                    Authenticate\n" +
+    "                </button>\n" +
+    "            </form>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+}]);
+;'use strict';
 
 angular.module('ab-base64',[]).constant('base64', (function() {
 

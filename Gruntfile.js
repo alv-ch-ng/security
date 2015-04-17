@@ -86,11 +86,21 @@
                   {
                     expand: true,
                     cwd: 'src/example/',
-                    src: ['fonts/glyphicons*','images/**/*','locales/**/*','pages/**/*','styles/**/*','*.js','*.html'],
+                    src: ['fonts/glyphicons*','images/**/*','locales/**/*','pages/**/*','styles/**/*','*.js','*.html', ''],
                     dest: 'dist/example'
-                  }
+                  },
                 ]
               },
+                i18n: {
+                    files: [
+                        {
+                            expand: true,
+                            cwd: 'src/i18n',
+                            src: ['**'],
+                            dest: 'dist/i18n'
+                        },
+                    ]
+                },
               example: {
                 files: [
                   {
@@ -324,7 +334,7 @@
         grunt.registerTask('templates', ['ngtemplates']);
 
         // DEV
-        grunt.registerTask('build', ['templates', 'all-test', 'concat:prod', 'copy:example','uglify:prod','uglify:example']);
+        grunt.registerTask('build', ['templates', 'all-test', 'concat:prod', 'copy:example', 'copy:i18n', 'uglify:prod','uglify:example']);
         grunt.registerTask('dev', ['build', 'browserSync:dev', 'watch']);
 
         // Default task.

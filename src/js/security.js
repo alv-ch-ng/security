@@ -10,7 +10,7 @@
             views: {
                 'content@': {
                     templateUrl: 'template/security/login.html',
-                    controller: 'SecurityCtrl'
+                    controller: 'LoginCtrl'
                 }
             },
             hidden: true

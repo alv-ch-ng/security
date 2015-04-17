@@ -28,12 +28,12 @@ angular.module('alv-ch-ng.security').run(['$templateCache', function($templateCa
     "                <div class=\"form-group\">\n" +
     "                    <label for=\"username\" translate=\"global.form.username\">Login</label>\n" +
     "                    <input type=\"text\" class=\"form-control\" id=\"username\"\n" +
-    "                           placeholder=\"{{\\'global.form.username.placeholder\\' | translate}}\" ng-model=\"username\" />\n" +
+    "                           placeholder=\"{{'global.form.username.placeholder' | translate}}\" ng-model=\"username\" />\n" +
     "                </div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <label for=\"password\" translate=\"login.form.password\">Password</label>\n" +
     "                    <input type=\"password\" class=\"form-control\" id=\"password\"\n" +
-    "                           placeholder=\"{{\\'login.form.password.placeholder\\' | translate}}\" ng-model=\"password\" />\n" +
+    "                           placeholder=\"{{'login.form.password.placeholder' | translate}}\" ng-model=\"password\" />\n" +
     "                </div>\n" +
     "                <button type=\"submit\" class=\"btn btn-primary\" ng-click=\"login()\" translate=\"login.form.button\">\n" +
     "                    Authenticate\n" +
@@ -41,7 +41,7 @@ angular.module('alv-ch-ng.security').run(['$templateCache', function($templateCa
     "            </form>\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "</div>"
+    "</div>\n"
   );
 
 }]);
