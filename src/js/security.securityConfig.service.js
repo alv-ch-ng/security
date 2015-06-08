@@ -7,8 +7,8 @@
 
         var _clientId = '';
         var _clientSecret = '';
-        var _authPath = 'oauth/token';
-        var _logoutPath = 'api/logout';
+        var _authPath = '/uaa/oauth/token';
+        var _logoutPath = 'uaa/oauth/revoke';
         var _registerPath = 'api/register';
         var _activationPath = 'api/activate';
         var _accountPath = 'api/account';

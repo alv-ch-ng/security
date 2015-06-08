@@ -27,52 +27,46 @@
         });
     });
 
-    module.run(function($rootScope, Principal, $state, SecurityService) {
+    module.run(function($rootScope, Principal, $state, $http, $window, SecurityService, localStorageService) {
 
         var STATE_LOGIN = 'login';
         var STATE_ACCESS_DENIED = 'accessdenied';
+
+        var token = localStorageService.get('auth_token');
+
+        if (token && token.expires_at && new Date(token.expires_at).getTime() > new Date().getTime()) {
+            $http.defaults.headers.common.Authorization = 'Bearer ' + token.access_token;
+
+            var userData = JSON.parse($window.atob(token.access_token.split('.')[1]));
+            var account = {
+                userName: userData.user_name,
+                roles: userData.authorities,
+                jti: userData.jti
+            };
+            Principal.authenticate(account);
+        }
 
         function redirectTo(redirectTarget, event) {
             event.preventDefault();
             $state.go(redirectTarget);
         }
 
-        function checkAuthenticationRemotely(event) {
-            SecurityService.getUserAccount().success(function (result) {
-                Principal.authenticate(result);
-            }).error(function () {
-                redirectTo(STATE_LOGIN, event);
-            });
-        }
-
         function checkAuthorization(event) {
             if (Principal.isIdentityResolved() && !Principal.isInAnyRole($rootScope.toState.data.roles)) {
                 redirectTo(STATE_ACCESS_DENIED, event);
-            } else if (!Principal.isIdentityResolved()) {
-                checkAuthorizationRemotely(event);
             }
-        }
-
-        function checkAuthorizationRemotely(event) {
-            SecurityService.getUserAccount().success(function (result) {
-                Principal.authenticate(result);
-                if (!Principal.isInAnyRole($rootScope.toState.data.roles)) {
-                    redirectTo(STATE_ACCESS_DENIED, event);
-                }
-            }).error(function () {
-                redirectTo(STATE_LOGIN, event);
-            });
         }
 
         function checkAccess(event) {
             if ($rootScope.toState.data.authenticated && !Principal.isIdentityResolved()) {
-                checkAuthenticationRemotely(event);
+                redirectTo(STATE_LOGIN, event);
             } else if ($rootScope.toState.data.roles && $rootScope.toState.data.roles.length > 0) {
                 checkAuthorization(event);
             }
         }
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams) {
+
             $rootScope.toState = toState;
             $rootScope.toStateParams = toStateParams;
             if (!$rootScope.toState.data) {

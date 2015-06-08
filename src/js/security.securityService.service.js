@@ -3,7 +3,7 @@
 
     var module = angular.module('alv-ch-ng.security');
 
-    module.factory('SecurityService', ['$rootScope', '$http', '$q', 'Principal', 'AuthServerProvider', 'SecurityConfig', function ($rootScope, $http, $q, Principal, AuthServerProvider, SecurityConfig) {
+    module.factory('SecurityService', ['$rootScope', '$http', '$q', 'Principal', 'AuthServerProvider', 'SecurityConfig', '$window', 'localStorageService', function ($rootScope, $http, $q, Principal, AuthServerProvider, SecurityConfig, $window, localStorageService) {
 
         var _onLoginFail = function() {
             $rootScope.loginError = true;
@@ -15,13 +15,17 @@
         };
 
         function login(credentials) {
-            AuthServerProvider.login(credentials).success(function () {
-                $http.get(SecurityConfig.getAccountPath()).success(function(account) {
-                    Principal.authenticate(account);
-                    if (angular.isFunction(_onLoginSuccess)) {
-                        _onLoginSuccess(account);
-                    }
-                });
+            AuthServerProvider.login(credentials).success(function (data) {
+                var userData = $window.atob(data.access_token.split('.')[1]);
+                var account = {
+                    userName: userData.user_name,
+                    roles: userData.authorities,
+                    jti: userData.jti
+                };
+                Principal.authenticate(account);
+                if (angular.isFunction(_onLoginSuccess)) {
+                    _onLoginSuccess(account);
+                }
             }).error(function (error) {
                 if (angular.isFunction(_onLoginFail)) {
                     _onLoginFail(error);
@@ -30,8 +34,8 @@
         }
 
         function logout() {
-            AuthServerProvider.logout();
             Principal.authenticate(null);
+            localStorageService.clearAll();
         }
 
         function register(account) {

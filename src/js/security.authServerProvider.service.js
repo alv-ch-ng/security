@@ -9,7 +9,7 @@
             if (SecurityConfig.getAuthType() === 'oauth2') {
                 return 'username=' + credentials.username + '&password=' +
                     credentials.password + '&grant_type=password&scope=read%20write&' +
-                    'client_secret=' + SecurityConfig.getClientSecret() + '&client_id=' + SecurityConfig.getClientId();
+                    'client_secret=' + SecurityConfig.getClientSecret() + '&client_id=' + SecurityConfig.getClientId() + "&response_type=code";
             } else {
                 return 'j_username=' + encodeURIComponent(credentials.username) + '&j_password=' + encodeURIComponent(credentials.password) + '&submit=Login';
             }
@@ -40,7 +40,7 @@
                         var expiredAt = new Date();
                         expiredAt.setSeconds(expiredAt.getSeconds() + response.expires_in);
                         response.expires_at = expiredAt.getTime();
-                        localStorageService.set('token', response);
+                        localStorageService.set('auth_token', response);
                     }
                 });
         }
@@ -52,15 +52,8 @@
             return createLoginRequest(createLoginData(credentials), createLoginHeaders());
         }
 
-        function logout() {
-            // logout from the server
-            $http.post(SecurityConfig.getLogoutPath()).then(function () {
-                localStorageService.clearAll();
-            });
-        }
-
         function getToken() {
-            return localStorageService.get('token');
+            return localStorageService.get('auth_token');
         }
 
         function hasValidToken() {
@@ -70,7 +63,6 @@
 
         return {
             login: login,
-            logout: logout,
             getToken: getToken,
             hasValidToken: hasValidToken
         };

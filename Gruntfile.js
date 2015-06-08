@@ -13,18 +13,18 @@
             // Metadata.
             pkg: grunt.file.readJSON('package.json'),
             alvchng: grunt.file.readJSON('.alvchngrc'),
-             // Task configurations.
+            // Task configurations.
             clean: {
                 all: ['dist', 'build'],
                 dist: ['dist'],
                 build: ['build']
             },
-            ngtemplates:  {
-              'alv-ch-ng.security':  {
-                cwd:      'src/',
-                src:      'template/**/*.html',
-                dest:     'src/js/security.templates.js'
-              }
+            ngtemplates: {
+                'alv-ch-ng.security': {
+                    cwd: 'src/',
+                    src: 'template/**/*.html',
+                    dest: 'src/js/security.templates.js'
+                }
             },
             'ngAnnotate': {
                 'dist': {
@@ -54,43 +54,33 @@
                     }
                 },
                 example: {
-                  options: {
-                    'mangle': false
-                  },
-                  files: {
-                    'src/example/lib.min.js': [
-                      'lib/jquery/dist/jquery.js',
-                      'lib/bootstrap/dist/js/bootstrap.js',
-                      'lib/angular/angular.js',
-                      'lib/angular-aria/angular-aria.js',
-                      'lib/angular-cookies/angular-cookies.js',
-                      'lib/angular-route/angular-route.js',
-                      'lib/angular-sanitize/angular-sanitize.js',
-                      'lib/angular-resource/angular-resource.js',
-                      'lib/angular-scroll/angular-scroll.js',
-                      'lib/angular-translate/angular-translate.js',
-                      'lib/angular-translate-storage-cookie/angular-translate-storage-cookie.js',
-                      'lib/angular-translate-storage-local/angular-translate-storage-local.js',
-                      'lib/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
-                      'lib/ng-lodash/build/ng-lodash.js',
-                      'lib/alv-ch-ng.core/dist/alv-ch-ng.core.js',
-                      'lib/ng-dev/dist/ng-dev.js',
-                      'lib/highlightjs/highlight.pack.js'
-                    ]
-                  }
+                    options: {
+                        'mangle': false
+                    },
+                    files: {
+                        'src/example/lib.min.js': [
+                            'lib/jquery/dist/jquery.js',
+                            'lib/bootstrap/dist/js/bootstrap.js',
+                            'lib/angular/angular.js',
+                            'lib/angular-aria/angular-aria.js',
+                            'lib/angular-cookies/angular-cookies.js',
+                            'lib/angular-route/angular-route.js',
+                            'lib/angular-sanitize/angular-sanitize.js',
+                            'lib/angular-resource/angular-resource.js',
+                            'lib/angular-scroll/angular-scroll.js',
+                            'lib/angular-translate/angular-translate.js',
+                            'lib/angular-translate-storage-cookie/angular-translate-storage-cookie.js',
+                            'lib/angular-translate-storage-local/angular-translate-storage-local.js',
+                            'lib/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
+                            'lib/ng-lodash/build/ng-lodash.js',
+                            'lib/alv-ch-ng.core/dist/alv-ch-ng.core.js',
+                            'lib/ng-dev/dist/ng-dev.js',
+                            'lib/highlightjs/highlight.pack.js'
+                        ]
+                    }
                 }
             },
             copy: {
-              prod: {
-                files: [
-                  {
-                    expand: true,
-                    cwd: 'src/example/',
-                    src: ['fonts/glyphicons*','images/**/*','locales/**/*','pages/**/*','styles/**/*','*.js','*.html', ''],
-                    dest: 'dist/example'
-                  },
-                ]
-              },
                 i18n: {
                     files: [
                         {
@@ -98,31 +88,31 @@
                             cwd: 'src/i18n',
                             src: ['**'],
                             dest: 'dist/i18n'
-                        },
+                        }
                     ]
                 },
-              example: {
-                files: [
-                  {
-                    expand: true,
-                    cwd: 'lib/bootstrap/',
-                    src: 'fonts/*',
-                    dest: 'src/example'
-                  },
-                  {
-                    expand: true,
-                    cwd: 'lib/alv-ch-ng.style/dist/css/',
-                    src: 'alv-ch-ng.bootstrap.css',
-                    dest: 'src/example/styles'
-                  },
-                  {
-                    expand: true,
-                    cwd: 'lib/ng-dev/dist/css/',
-                    src: '*.min.css',
-                    dest: 'src/example/styles'
-                  }
-                ]
-              }
+                example: {
+                    files: [
+                        {
+                            expand: true,
+                            cwd: 'lib/bootstrap/',
+                            src: 'fonts/*',
+                            dest: 'src/example'
+                        },
+                        {
+                            expand: true,
+                            cwd: 'lib/alv-ch-ng.style/dist/css/',
+                            src: 'alv-ch-ng.bootstrap.css',
+                            dest: 'src/example/styles'
+                        },
+                        {
+                            expand: true,
+                            cwd: 'lib/ng-dev/dist/css/',
+                            src: '*.min.css',
+                            dest: 'src/example/styles'
+                        }
+                    ]
+                }
             },
             cssbeautifier: {
                 options: {
@@ -150,19 +140,19 @@
                         mode: 'gzip'
                     },
                     files: [
-                        { src: ['dist/css/security.min.css'], dest: 'dist/css/security.min.css' }
+                        {src: ['dist/css/security.min.css'], dest: 'dist/css/security.min.css'}
                     ]
                 }
             },
             concat: {
-              options: {
-                separator: ';',
-                banner: '<%= alvchng.banner %>'
-              },
-              prod: {
-                src: ['src/js/security.js', 'src/js/security.*.*.js', 'src/js/security.templates.js', 'lib/angular-utf8-base64/angular-utf8-base64.js'],
-                dest: 'dist/alv-ch-ng.security.js'
-              }
+                options: {
+                    separator: ';',
+                    banner: '<%= alvchng.banner %>'
+                },
+                prod: {
+                    src: ['src/js/security.js', 'src/js/security.*.*.js', 'src/js/security.templates.js', 'lib/angular-utf8-base64/angular-utf8-base64.js'],
+                    dest: 'dist/alv-ch-ng.security.js'
+                }
             },
             jasmine: {
                 unit: {
@@ -238,12 +228,12 @@
                 }
             },
             htmlhint: {
-              options: {
-                htmlhintrc: '.htmlhintrc'
-              },
+                options: {
+                    htmlhintrc: '.htmlhintrc'
+                },
                 templates: {
-                src: ['src/template/**/*.html']
-              }
+                    src: ['src/template/**/*.html']
+                }
             },
             jshint: {
                 gruntfile: {
@@ -293,32 +283,32 @@
                 }
             },
             watch: {
-              html: {
-                files: 'src/template/**/*.html',
-                tasks: ['htmlhint:templates', 'templates']
-              },
-              jshint: {
-                files: 'src/js/*.js',
-                  tasks: ['jshint-test']
-              },
-              test: {
-                  files: 'src/js/**/*.js',
-                  tasks: ['unit-test']
-              }
+                html: {
+                    files: 'src/template/**/*.html',
+                    tasks: ['htmlhint:templates', 'templates']
+                },
+                jshint: {
+                    files: 'src/js/*.js',
+                    tasks: ['jshint-test']
+                },
+                test: {
+                    files: 'src/js/**/*.js',
+                    tasks: ['unit-test']
+                }
             },
             browserSync: {
-              dev: {
-                bsFiles: {
-                  src : 'src/**/*'
-                },
-                options: {
-                  server: {
-                    baseDir: './src',
-                    directory: false
-                  },
-                  watchTask: true
+                dev: {
+                    bsFiles: {
+                        src: 'src/**/*'
+                    },
+                    options: {
+                        server: {
+                            baseDir: './src',
+                            directory: false
+                        },
+                        watchTask: true
+                    }
                 }
-              }
             }
         });
 
@@ -326,7 +316,7 @@
         grunt.registerTask('unit-test', ['jasmine']);
         grunt.registerTask('jshint-test', ['jshint']);
 
-        grunt.registerTask('all-test', [ 'htmlhint:templates', 'jshint-test', 'unit-test', 'complexity']);
+        grunt.registerTask('all-test', ['htmlhint:templates', 'jshint-test', 'unit-test', 'complexity']);
         // CI
         grunt.registerTask('travis', ['jshint', 'clean:build', 'all-test', 'coveralls']);
 
@@ -334,11 +324,11 @@
         grunt.registerTask('templates', ['ngtemplates']);
 
         // DEV
-        grunt.registerTask('build', ['templates', 'all-test', 'concat:prod', 'copy:example', 'copy:i18n', 'uglify:prod','uglify:example']);
+        grunt.registerTask('build', ['templates', 'all-test', 'concat:prod', 'copy:example', 'copy:i18n', 'uglify:prod', 'uglify:example']);
         grunt.registerTask('dev', ['build', 'browserSync:dev', 'watch']);
 
         // Default task.
-        grunt.registerTask('default', ['clean:all','templates','all-test', 'concat','uglify:prod', 'copy:prod']);
+        grunt.registerTask('default', ['clean:all', 'templates', 'all-test', 'concat', 'uglify:prod']);
     };
 
 
