@@ -20,7 +20,7 @@
             it('"login()" executes a request to ' + host + ' ', function () {
                 inject(function ($httpBackend, AuthServerProvider) {
                     var data = 'username=testuser&password=testPW&grant_type=password&scope=read%20write&' +
-                        'client_secret=' + clientSecret + '&client_id=' + clientId;
+                        'client_secret=' + clientSecret + '&client_id=' + clientId + '&response_type=code';
                     $httpBackend.expectPOST(host, data).respond(200, oauthToken);
                     AuthServerProvider.login(userLogin).success(function () {
                         expect(true).toBeTruthy();
@@ -29,21 +29,11 @@
                 });
             });
 
-            it('"logout()" executes a request to "api/logout" and clears the localStorageService', function () {
-                inject(function ($httpBackend, AuthServerProvider, localStorageService, SecurityConfig) {
-                    spyOn(localStorageService, 'clearAll');
-                    $httpBackend.expectPOST(SecurityConfig.getLogoutPath()).respond(200, {});
-                    AuthServerProvider.logout();
-                    $httpBackend.flush();
-                    expect(localStorageService.clearAll).toHaveBeenCalled();
-                });
-            });
-
             it('"getToken()" returns the persisted token when set', function () {
                 inject(function ($httpBackend, AuthServerProvider, localStorageService) {
                     localStorageService.clearAll();
                     expect(AuthServerProvider.getToken()).toBeNull();
-                    localStorageService.set('token', "myFreshToken");
+                    localStorageService.set('auth_token', "myFreshToken");
                     expect(AuthServerProvider.getToken()).toEqual("myFreshToken");
                 });
             });
@@ -53,13 +43,13 @@
                     localStorageService.clearAll();
                     var expiredAt = new Date();
                     expiredAt.setSeconds(expiredAt.getSeconds() + 20);
-                    localStorageService.set('token', {expires_at: expiredAt.getTime()});
+                    localStorageService.set('auth_token', {expires_at: expiredAt.getTime()});
                     expect(AuthServerProvider.hasValidToken()).toBeTruthy();
 
                     localStorageService.clearAll();
                     expiredAt = new Date();
                     expiredAt.setSeconds(expiredAt.getSeconds() - 20);
-                    localStorageService.set('token', {expires_at: expiredAt.getTime()});
+                    localStorageService.set('auth_token', {expires_at: expiredAt.getTime()});
                     expect(AuthServerProvider.hasValidToken()).toBeFalsy();
                 });
             });

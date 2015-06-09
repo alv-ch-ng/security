@@ -16,7 +16,7 @@
 
         function login(credentials) {
             AuthServerProvider.login(credentials).success(function (data) {
-                var userData = $window.atob(data.access_token.split('.')[1]);
+                var userData = decodeURIComponent($window.atob(data.access_token.split('.')[1])) ;
                 var account = {
                     userName: userData.user_name,
                     roles: userData.authorities,
@@ -50,10 +50,6 @@
             return $http.post(SecurityConfig.getAccountPath() + '/' + account[SecurityConfig.getUserIdParam()], account);
         }
 
-        function getUserAccount() {
-            return $http.get(SecurityConfig.getAccountPath());
-        }
-
         function getAccount(key) {
             return $http.get(SecurityConfig.getAccountPath() + '/' + key);
         }
@@ -72,7 +68,6 @@
             updateAccount: updateAccount,
             activateAccount: activateAccount,
             getAccount: getAccount,
-            getUserAccount: getUserAccount,
             register: register,
             changePassword: changePassword,
             resendPassword: resendPassword,

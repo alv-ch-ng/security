@@ -36,14 +36,16 @@
 
         if (token && token.expires_at && new Date(token.expires_at).getTime() > new Date().getTime()) {
             $http.defaults.headers.common.Authorization = 'Bearer ' + token.access_token;
-
-            var userData = JSON.parse($window.atob(token.access_token.split('.')[1]));
-            var account = {
-                userName: userData.user_name,
-                roles: userData.authorities,
-                jti: userData.jti
-            };
-            Principal.authenticate(account);
+            var b64UserData = token.access_token.split('.')[1];
+            if (b64UserData) {
+                var userData = decodeURIComponent($window.atob(b64UserData));
+                var account = {
+                    userName: userData.user_name,
+                    roles: userData.authorities,
+                    jti: userData.jti
+                };
+                Principal.authenticate(account);
+            }
         }
 
         function redirectTo(redirectTarget, event) {

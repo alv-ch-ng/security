@@ -7,8 +7,7 @@
 
         it('"login()" passes silently when login is successful and no custom "_onLoginSuccess()" fn is set.', function() {
             inject(function ($rootScope, $httpBackend, SecurityService, SecurityConfig) {
-                $httpBackend.expectPOST(SecurityConfig.getAuthPath()).respond(200, { 'userName': 'testUserName' });
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, { 'userName': 'testUserName' });
+                $httpBackend.expectPOST(SecurityConfig.getAuthPath()).respond(200, oauthToken);
                 $rootScope.back = function(){};
                 SecurityService.login({ 'userName': 'testUserName', 'password': 'testPassword' });
                 $httpBackend.flush();
@@ -23,8 +22,7 @@
                 };
                 spyOn(callback, 'fn');
                 SecurityService.setOnLoginSuccess(callback.fn);
-                $httpBackend.expectPOST(SecurityConfig.getAuthPath()).respond(200, { data: { 'userName': 'testUserName', roles: ['ADMIN'] }});
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, { 'userName': 'testUserName' });
+                $httpBackend.expectPOST(SecurityConfig.getAuthPath()).respond(200, oauthToken);
                 SecurityService.login({ 'userName': 'testUserName', 'password': 'testPassword' });
                 $httpBackend.flush();
                 expect(callback.fn).toHaveBeenCalled();
@@ -34,8 +32,7 @@
         it('"login()" is tolerant for null loginSuccess listeners', function() {
             inject(function ($httpBackend, SecurityService, SecurityConfig) {
                 SecurityService.setOnLoginSuccess(null);
-                $httpBackend.expectPOST(SecurityConfig.getAuthPath()).respond(200, { data: { 'userName': 'testUserName', roles: ['ADMIN'] }});
-                $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, { 'userName': 'testUserName' });
+                $httpBackend.expectPOST(SecurityConfig.getAuthPath()).respond(200, oauthToken);
                 SecurityService.login({ 'userName': 'testUserName', 'password': 'testPassword' });
                 $httpBackend.flush();
                 expect(true).toEqual(true);
@@ -73,12 +70,10 @@
         });
 
         it('"logout()" sends a logout request to the api server and resets the Principal service.', function() {
-            inject(function ($httpBackend, SecurityService, Principal, SecurityConfig) {
+            inject(function ($httpBackend, SecurityService, Principal) {
                 Principal.authenticate({ 'userName': 'testUserName', 'password': 'testPassword' });
                 expect(Principal.isAuthenticated()).toBeTruthy();
-                $httpBackend.expectPOST(SecurityConfig.getLogoutPath()).respond(400, { 'userName': 'testUserName' });
                 SecurityService.logout();
-                $httpBackend.flush();
                 expect(Principal.isAuthenticated()).toBeFalsy();
             });
         });

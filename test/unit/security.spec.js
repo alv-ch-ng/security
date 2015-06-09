@@ -64,24 +64,13 @@
                 });
             });
 
-            it('checks authentication remotely if local check was not successful', function() {
-                inject(function ($rootScope, $state, $httpBackend, SecurityService, SecurityConfig, Principal) {
-                    $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(200, {});
-                    spyOn(Principal, 'authenticate');
-                    $state.go('authenticated');
-                    $httpBackend.flush();
-                    expect(Principal.authenticate).toHaveBeenCalled();
-                    expect($state.current.name).toBe('authenticated');
-                });
-            });
-
             it('redirects to login if local and remote checks were not successful', function() {
-                inject(function ($rootScope, $state, $httpBackend, SecurityService, SecurityConfig) {
-                    $httpBackend.expectGET(SecurityConfig.getAccountPath()).respond(401, {});
+                inject(function ($rootScope, $state, $httpBackend) {
+                    $httpBackend.expectGET('template/security/login.html').respond(200, '');
                     $state.go('authenticated');
-                    spyOn($state, 'go');
                     $httpBackend.flush();
-                    expect($state.go).toHaveBeenCalledWith('login');
+                    $rootScope.$digest();
+                    expect($state.current.name).toBe('login');
                 });
             });
 
@@ -115,58 +104,6 @@
                 });
             });
 
-            it('tries to fetch a remote account to check authorization', function() {
-                inject(function ($rootScope, $httpBackend, $state) {
-                    $httpBackend.expectGET('api/account').respond(200, {
-                        roles: ['ROLE_TEST']
-                    });
-                    $rootScope.toState = {
-                        data: {
-                            roles: ['ROLE_TEST']
-                        }
-                    };
-                    $state.go('protected');
-                    $httpBackend.flush();
-                    $rootScope.$digest();
-                    expect($state.current.name).toBe('protected');
-                });
-            });
-
-            it('tries to fetch a remote account and fails if required roles are not presend', function() {
-                inject(function ($rootScope, $httpBackend, $state) {
-                    $httpBackend.expectGET('api/account').respond(200, {
-                        roles: ['ROLE_TESTFAIL']
-                    });
-                    $httpBackend.expectGET('template/security/accessdenied.html').respond(200, {});
-                    $rootScope.toState = {
-                        data: {
-                            roles: ['ROLE_TEST']
-                        }
-                    };
-                    $state.go('protected');
-                    $httpBackend.flush();
-                    $rootScope.$digest();
-                    expect($state.current.name).toBe('accessdenied');
-                });
-            });
-
-            it('tries to fetch a remote account and redirects to login if account getting fails', function() {
-                inject(function ($rootScope, $httpBackend, $state) {
-                    $httpBackend.expectGET('api/account').respond(401, {
-                        roles: ['ROLE_TESTFAIL']
-                    });
-                    $httpBackend.expectGET('template/security/login.html').respond(200, {});
-                    $rootScope.toState = {
-                        data: {
-                            roles: ['ROLE_TEST']
-                        }
-                    };
-                    $state.go('protected');
-                    $httpBackend.flush();
-                    $rootScope.$digest();
-                    expect($state.current.name).toBe('login');
-                });
-            });
         });
 
         describe('states', function() {
