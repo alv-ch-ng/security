@@ -613,7 +613,7 @@ angular.module('ab-base64',[]).constant('base64', (function() {
                 result,
                 len = buffer.length,
                 nan0, nan1, nan2, enc = [, , , ];
-            
+
             if (B64.ie) {
                 result = [];
                 while (++position < len) {
@@ -767,7 +767,7 @@ angular.module('ab-base64',[]).constant('base64', (function() {
         decode: B64.decode,
         encode: B64.encode,
         urldecode: B64url.decode,
-        urlencode: B64url.encode,
+        urlencode: B64url.encode
     };
 })());
 
