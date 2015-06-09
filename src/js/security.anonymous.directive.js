@@ -8,7 +8,11 @@
             restrict: 'A',
             link: function(scope, element) {
                 scope.$watch(Principal.isAuthenticated, function( newValue ) {
-                    newValue ? element.hide() : element.show();
+                    if (newValue) {
+                        element.hide();
+                    } else {
+                        element.show();
+                    }
                 });
             }
         };

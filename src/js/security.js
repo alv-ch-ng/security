@@ -76,7 +76,7 @@
             $rootScope.toState = toState;
             $rootScope.toStateParams = toStateParams;
             if ($rootScope.toState.data) {
-                checkAccess(event)
+                checkAccess(event);
             }
         });
     });
