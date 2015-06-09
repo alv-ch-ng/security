@@ -1,4 +1,4 @@
-/* alv-ch-ng.security - 0.2.0 - 2015-06-09 - Copyright (c) 2015 Informatik der Arbeitslosenversicherung; */
+/* alv-ch-ng.security - 0.2.1 - 2015-06-09 - Copyright (c) 2015 Informatik der Arbeitslosenversicherung; */
 ;(function () {
     'use strict';
 
@@ -45,7 +45,7 @@
 
         function handleSB64UserData(data) {
             if (data) {
-                authenticate(decodeURIComponent($window.atob(data)));
+                authenticate(JSON.parse(decodeURIComponent($window.atob(data))));
             }
         }
 
@@ -613,7 +613,7 @@ angular.module('ab-base64',[]).constant('base64', (function() {
                 result,
                 len = buffer.length,
                 nan0, nan1, nan2, enc = [, , , ];
-
+            
             if (B64.ie) {
                 result = [];
                 while (++position < len) {
@@ -767,7 +767,7 @@ angular.module('ab-base64',[]).constant('base64', (function() {
         decode: B64.decode,
         encode: B64.encode,
         urldecode: B64url.decode,
-        urlencode: B64url.encode
+        urlencode: B64url.encode,
     };
 })());
 
