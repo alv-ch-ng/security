@@ -44,7 +44,7 @@
 
         function handleSB64UserData(data) {
             if (data) {
-                authenticate(decodeURIComponent($window.atob(data)));
+                authenticate(JSON.parse(decodeURIComponent($window.atob(data))));
             }
         }
 
