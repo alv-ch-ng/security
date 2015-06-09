@@ -34,18 +34,23 @@
 
         var token = localStorageService.get('auth_token');
 
+        function authenticate(userData) {
+            Principal.authenticate({
+                userName: userData.user_name,
+                roles: userData.authorities,
+                jti: userData.jti
+            });
+        }
+
+        function handleSB64UserData(data) {
+            if (data) {
+                authenticate(decodeURIComponent($window.atob(data)));
+            }
+        }
+
         if (token && token.expires_at && new Date(token.expires_at).getTime() > new Date().getTime()) {
             $http.defaults.headers.common.Authorization = 'Bearer ' + token.access_token;
-            var b64UserData = token.access_token.split('.')[1];
-            if (b64UserData) {
-                var userData = decodeURIComponent($window.atob(b64UserData));
-                var account = {
-                    userName: userData.user_name,
-                    roles: userData.authorities,
-                    jti: userData.jti
-                };
-                Principal.authenticate(account);
-            }
+            handleSB64UserData(token.access_token.split('.')[1]);
         }
 
         function redirectTo(redirectTarget, event) {
@@ -68,13 +73,11 @@
         }
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams) {
-
             $rootScope.toState = toState;
             $rootScope.toStateParams = toStateParams;
-            if (!$rootScope.toState.data) {
-                return;
+            if ($rootScope.toState.data) {
+                checkAccess(event)
             }
-            checkAccess(event);
         });
     });
 
